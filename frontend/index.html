@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otimizador de Campanhas Promocionais 3P</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --secondary: #8b5cf6;
+            --secondary-dark: #7c3aed;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ======================== LAYOUT ======================== */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* AppBar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 240px;
+            height: calc(100vh - 60px);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 900;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(6, 182, 212, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: rgba(6, 182, 212, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 240px;
+            margin-top: 60px;
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        /* ======================== CARDS ======================== */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .card-result {
+            border-left: 4px solid var(--success);
+        }
+
+        /* ======================== FORM ======================== */
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        input, select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background-color: #0f172a;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+
+        /* ======================== BUTTONS ======================== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--bg-dark);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .btn-small-download {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+        }
+
+        .btn-small-download:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-refresh {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            background-color: transparent;
+        }
+
+        .btn-refresh:hover {
+            background-color: rgba(6, 182, 212, 0.1);
+        }
+
+        /* ======================== ALERTS ======================== */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #86efac;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* ======================== GRID ======================== */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ======================== LOADING ======================== */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ======================== TABLE ======================== */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #0f172a;
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background-color: rgba(6, 182, 212, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        .status-processing {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        /* ======================== RESULTS ======================== */
+        .result-metric {
+            margin-bottom: 16px;
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .result-summary {
+            background-color: #0f172a;
+            padding: 12px;
+            border-radius: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        /* ======================== TITLE ======================== */
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 10px 0;
+            }
+
+            .main {
+                margin-left: 60px;
+                padding: 20px;
+            }
+
+            .nav-item {
+                padding: 12px 10px;
+                justify-content: center;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1 class="navbar-title">🎯 Otimizador de Campanhas 3P</h1>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="#optimization" class="nav-item active" onclick="showPage('optimization')">
+                <span>🏠</span>
+                <span>Otimizador</span>
+            </a>
+            <a href="#history" class="nav-item" onclick="showPage('history')">
+                <span>📊</span>
+                <span>Histórico</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- PAGE: Optimization -->
+            <div id="optimization" class="page">
+                <h2 class="page-title">Otimizador de Campanhas Promocionais</h2>
+
+                <div class="grid">
+                    <!-- Form Card -->
+                    <div class="card">
+                        <div class="card-title">Parâmetros da Campanha</div>
+
+                        <form id="optimizationForm" onsubmit="handleOptimize(event)">
+                            <!-- Budget -->
+                            <div class="form-group">
+                                <label for="budget">Orçamento (R$) *</label>
+                                <input
+                                    type="number"
+                                    id="budget"
+                                    placeholder="Ex: 5000"
+                                    min="100"
+                                    step="100"
+                                    required
+                                />
+                            </div>
+
+                            <!-- Category -->
+                            <div class="form-group">
+                                <label for="category">Categoria de Produtos *</label>
+                                <select id="category" required>
+                                    <option value="">-- Selecione uma categoria --</option>
+                                    <option value="UD">UD - Utilidades Domésticas</option>
+                                    <option value="EP">EP - Eletrônicos e Periféricos</option>
+                                    <option value="MODA">Moda</option>
+                                    <option value="LIVROS">Livros</option>
+                                </select>
+                            </div>
+
+                            <!-- Max Pricing Index -->
+                            <div class="form-group">
+                                <label for="maxPricing">Máximo Índice de Preço</label>
+                                <input
+                                    type="number"
+                                    id="maxPricing"
+                                    placeholder="Ex: 1.0"
+                                    min="0"
+                                    step="0.1"
+                                    value="1.0"
+                                />
+                            </div>
+
+                            <!-- Campaign Weeks -->
+                            <div class="form-group">
+                                <label for="weeks">Duração da Campanha (semanas) *</label>
+                                <input
+                                    type="number"
+                                    id="weeks"
+                                    placeholder="Ex: 4"
+                                    min="1"
+                                    max="52"
+                                    step="1"
+                                    value="4"
+                                    required
+                                />
+                            </div>
+
+                            <!-- Alerts -->
+                            <div id="alertContainer"></div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary">
+                                <span id="btnText">🚀 Otimizar Campanha</span>
+                                <span id="btnSpinner" class="spinner hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Results Card -->
+                    <div id="resultCard" class="card card-result hidden">
+                        <div class="card-title" style="color: var(--success);">✅ Otimização Concluída</div>
+
+                        <div class="result-metric">
+                            <div class="result-label">ID da Requisição</div>
+                            <div
+                                id="requestId"
+                                style="
+                                    font-family: monospace;
+                                    font-size: 12px;
+                                    background-color: #0f172a;
+                                    padding: 8px;
+                                    border-radius: 4px;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    color: var(--text-secondary);
+                                "
+                            ></div>
+                        </div>
+
+                        <div class="result-metric">
+                            <div class="result-label">ROI Estimado</div>
+                            <div class="result-value" id="roiValue">0%</div>
+                        </div>
+
+                        <div class="result-metric">
+                            <div class="result-label">Resumo da Sugestão</div>
+                            <div class="result-summary" id="summary">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary" onclick="downloadResult()">
+                            📥 Baixar Planilha de Resultados
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: History -->
+            <div id="history" class="page hidden">
+                <h2 class="page-title">Histórico de Otimizações</h2>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Categoria</th>
+                                    <th>Orçamento</th>
+                                    <th>ROI Estimado</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTable">
+                                <!-- Sample rows -->
+                                <tr>
+                                    <td>b8c5e2f1</td>
+                                    <td>UD</td>
+                                    <td>R$ 5.000,00</td>
+                                    <td style="color: var(--success); font-weight: 600;">125,0%</td>
+                                    <td><span class="status-badge status-success">✅ Sucesso</span></td>
+                                    <td>28 mai 2026 14:30</td>
+                                    <td><button class="btn btn-small btn-small-download">📥 Baixar</button></td>
+                                </tr>
+                                <tr>
+                                    <td>a7d4f9c2</td>
+                                    <td>EP</td>
+                                    <td>R$ 10.000,00</td>
+                                    <td style="color: var(--success); font-weight: 600;">118,5%</td>
+                                    <td><span class="status-badge status-success">✅ Sucesso</span></td>
+                                    <td>27 mai 2026 10:15</td>
+                                    <td><button class="btn btn-small btn-small-download">📥 Baixar</button></td>
+                                </tr>
+                                <tr>
+                                    <td>c6e8b3a4</td>
+                                    <td>MODA</td>
+                                    <td>R$ 3.500,00</td>
+                                    <td style="color: var(--warning);">95,0%</td>
+                                    <td><span class="status-badge status-error">❌ Erro</span></td>
+                                    <td>26 mai 2026 16:45</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>d9f2c7e5</td>
+                                    <td>LIVROS</td>
+                                    <td>R$ 2.000,00</td>
+                                    <td>-</td>
+                                    <td><span class="status-badge status-processing">⏳ Processando</span></td>
+                                    <td>28 mai 2026 17:00</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-refresh" onclick="refreshHistory()">
+                            🔄 Atualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // State
+        let isLoading = false;
+        let currentResult = null;
+        let timeoutWarning = false;
+
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // Alert
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${type === 'error' ? '⚠️' : type === 'warning' ? '⏰' : '✅'}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function clearAlerts() {
+            document.getElementById('alertContainer').innerHTML = '';
+        }
+
+        // Form Validation
+        function validateForm() {
+            const budget = parseFloat(document.getElementById('budget').value);
+            const category = document.getElementById('category').value;
+            const weeks = parseInt(document.getElementById('weeks').value);
+
+            if (!budget) {
+                showAlert('Orçamento é obrigatório');
+                return false;
+            }
+            if (budget < 100) {
+                showAlert('Orçamento mínimo é R$ 100');
+                return false;
+            }
+            if (!category) {
+                showAlert('Categoria é obrigatória');
+                return false;
+            }
+            if (!weeks || weeks < 1) {
+                showAlert('Semanas da campanha deve ser >= 1');
+                return false;
+            }
+            return true;
+        }
+
+        // Optimize
+        async function handleOptimize(event) {
+            event.preventDefault();
+            clearAlerts();
+
+            if (!validateForm()) return;
+
+            isLoading = true;
+            timeoutWarning = false;
+            updateButtonState();
+
+            const budget = parseFloat(document.getElementById('budget').value);
+            const category = document.getElementById('category').value;
+            const maxPricing = parseFloat(document.getElementById('maxPricing').value);
+            const weeks = parseInt(document.getElementById('weeks').value);
+
+            // Simulated API call
+            const startTime = Date.now();
+            const timeoutCheck = setTimeout(() => {
+                if (isLoading) {
+                    timeoutWarning = true;
+                    showAlert(
+                        'A otimização está demorando mais que o esperado (10+ minutos). Você pode aguardar ou tentar novamente.',
+                        'warning'
+                    );
+                }
+            }, 600000); // 10 minutes
+
+            // Simulate processing
+            setTimeout(() => {
+                clearTimeout(timeoutCheck);
+
+                // Mock result
+                const roi = (1.15 + Math.random() * 0.15).toFixed(3);
+                currentResult = {
+                    request_id: 'req_' + Math.random().toString(36).substr(2, 9),
+                    estimated_roi: roi,
+                    summary: `Baseado nos parâmetros fornecidos:\n\n✓ Orçamento: R$ ${budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n✓ Categoria: ${category}\n✓ Duração: ${weeks} semanas\n✓ Índice de Preço: ${maxPricing}\n\nA otimização recomenda a seguinte estratégia de alocação de produtos para maximizar o ROI esperado. Verifique a planilha gerada para detalhes completos.`,
+                    file_url: '#'
+                };
+
+                displayResult(currentResult);
+                showAlert('Otimização concluída com sucesso!', 'success');
+
+                isLoading = false;
+                timeoutWarning = false;
+                updateButtonState();
+            }, 3000); // Simulate 3 second processing
+        }
+
+        function displayResult(result) {
+            const resultCard = document.getElementById('resultCard');
+            document.getElementById('requestId').textContent = result.request_id;
+            document.getElementById('roiValue').textContent = (result.estimated_roi * 100).toFixed(1) + '%';
+            document.getElementById('summary').textContent = result.summary;
+            resultCard.classList.remove('hidden');
+        }
+
+        function downloadResult() {
+            if (currentResult) {
+                showAlert('Download iniciado...', 'success');
+                // In real app, would trigger actual download
+                alert('Em produção, isso baixaria um arquivo XLSX');
+            }
+        }
+
+        function refreshHistory() {
+            showAlert('Histórico atualizado!', 'success');
+        }
+
+        function updateButtonState() {
+            const btn = document.querySelector('#optimizationForm button[type="submit"]');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
+            if (isLoading) {
+                btn.disabled = true;
+                btnText.textContent = 'Processando';
+                btnSpinner.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                btnText.innerHTML = '🚀 Otimizar Campanha';
+                btnSpinner.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
