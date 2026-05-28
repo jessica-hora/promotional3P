@@ -1,0 +1,27 @@
+RESUMO: 
+Este aplicativo permite que os usuários solicitem uma sugestão de composição de campanha promocional a partir do seu budget de investimento. A solicitação é feita a partir do envio do valor de orçamento a ser investido, a categoria de produtos desejada, o máximo de Indice Pricing e a quantidade de semanas que a campanha deve ficar ativa. A sugestão de campanha é feita por um motor de otimização, em backend, que responde com uma planilha que contém a lista de skus, o preço atual de cada sku, o preço sugerido para a campanha, a previsão de ROI, a previsão de GMV Incremental, e a previsão de gasto de investimento. 
+
+Histórias de usuário: 
+
+Como usuário, quero adicionar o valor de orçamento a ser investido, a categoria de produtos desejada, o máximo de Indice Pricing e a quantidade de semanas que a campanha deve ficar ativa em uma página web (interface) integrada ao motor de otimização. 
+
+Como usuário, quero baixar a planilha de sugestão de campanhas a partir de um botão e download para que eu possa enviar para o sistema de campanhas promocional. 
+
+Como usuário, quero com as informações preenchidas na página web (interface) clicar em “otimizar” e receber como resposta uma planilha com as informações necessárias para criação de campanha sem ser redirecionada para uma outra página. 
+
+Como usuário, quero ter uma página na interface que guarde o histórico de todas as solicitações anteriores junto com as informações de input e a planilha gerada em cada solicitação, para que eu possa baixar os arquivos anteriores. 
+
+Como usuário, quero que juntamente com a planilha de sugestão de campanha tenha um resumo de texto que contenha o resultado total da sugestão, para que possa rapidamente entender se a sugestão respeita os meus inputs.
+
+Critérios de aceite: 
+Não fazer a requisição de otimização sem que uma ou mais informações de input não esteja preenchidas.
+Mostre na interface e guarde em logs internos da aplicação qualquer erro no processo
+Salvar no banco de logs da aplicação todas as requisições e respostas que foram feitas, as bem sucedidas com as negativas. 
+Caso a otimização demore mais que 10min sinalizar na tela que o processo está demorando mais que o previsto e solicitar que o usuário escolha entra refazer a solicitação ou aguardar o processo finalizar. 
+
+ARQUITETURA: 
+
+A arquitetura simplista da aplicação deve compor os seguintes elementos: 
+Uma interface web sem cadastro de usuário apenas com as caixas de input dos valores necessários para a otimização. Essa interface deve ser construída baseada SKILL.md
+Uma aplicação de otimização (motor de otimização) baseada no notebook otimizador: otimizador_atualizado_v4.ipynb.
+Componente que guarda as requisições e as respostas do motor de otimização, assim como os seus logs.
