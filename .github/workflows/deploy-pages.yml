@@ -36,16 +36,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-      - name: Configure public GitHub Pages source (optional)
-        if: secrets.PAGES_TOKEN != ''
-        run: |
-          curl -L -X PUT \
-            -H "Authorization: Bearer ${{ secrets.PAGES_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/pages \
-            -d '{"source":{"branch":"gh-pages","path":"/"}}'
-      - name: Skip public GitHub Pages source configuration
-        if: secrets.PAGES_TOKEN == ''
-        run: |
-          echo "Skipping public GitHub Pages source configuration because PAGES_TOKEN is not set."
-          echo "The built site is still published privately to the gh-pages branch."
+          publish_branch: gh-pages
+          keep_files: false
