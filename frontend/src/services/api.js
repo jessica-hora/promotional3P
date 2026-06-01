@@ -43,7 +43,7 @@ const buildCsvContent = (rows) => {
   return [header.join(';'), ...lines].join('\n');
 };
 
-const generateRows = ({ budget }) => {
+const generateRows = ({ budget, objective }) => {
   const skus = [
     'SKU-1300',
     'SKU-2450',
@@ -55,9 +55,11 @@ const generateRows = ({ budget }) => {
 
   return skus.map((sku, index) => {
     const currentPrice = 45 + index * 18;
-    const suggestedPrice = +(currentPrice * (0.84 + index * 0.03)).toFixed(2);
+    const priceAdjustment = objective === 'take_rate' ? 0.95 : 0.84;
+    const suggestedPrice = +(currentPrice * (priceAdjustment + index * 0.03)).toFixed(2);
     const investment = +((budget / skus.length) * (1 + index * 0.05)).toFixed(2);
-    const estimatedGmv = +(investment * (1.75 + index * 0.12)).toFixed(2);
+    const gmvMultiplier = objective === 'take_rate' ? 1.5 + index * 0.08 : 1.75 + index * 0.12;
+    const estimatedGmv = +(investment * gmvMultiplier).toFixed(2);
     const incrementalGmv = +(estimatedGmv - investment).toFixed(2);
 
     return {
@@ -109,7 +111,7 @@ const optimizeCampaign = async ({ budget, category, objective, max_pricing_index
 
   await new Promise((resolve) => setTimeout(resolve, 1200));
 
-  const rows = generateRows({ budget });
+  const rows = generateRows({ budget, objective });
   const totalInvestment = rows.reduce((sum, row) => sum + row.investment, 0);
   const totalGmv = rows.reduce((sum, row) => sum + row.estimated_gmv, 0);
   const estimatedRoi = totalInvestment > 0 ? totalGmv / totalInvestment : 0;

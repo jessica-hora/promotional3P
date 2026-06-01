@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
-import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, createTheme, ThemeProvider } from '@maas-components/core';
-import { Home as HomeIcon, History as HistoryIcon } from '@maas-components/core';
+import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import HomeIcon from '@mui/icons-material/Home';
+import HistoryIcon from '@mui/icons-material/History';
 import OptimizationPage from './pages/OptimizationPage';
 import HistoryPage from './pages/HistoryPage';
 
 const theme = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       main: '#06b6d4',
     },
@@ -19,18 +21,22 @@ const theme = createTheme({
       paper: '#1e293b',
     },
   },
-  overrides: {
+  components: {
     MuiAppBar: {
-      root: {
-        backgroundColor: '#1e293b',
-        borderBottom: '1px solid #334155',
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e293b',
+          borderBottom: '1px solid #334155',
+        },
       },
     },
     MuiDrawer: {
-      paper: {
-        backgroundColor: '#1e293b',
-        borderRight: '1px solid #334155',
-        width: 240,
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#1e293b',
+          borderRight: '1px solid #334155',
+          width: 240,
+        },
       },
     },
   },
