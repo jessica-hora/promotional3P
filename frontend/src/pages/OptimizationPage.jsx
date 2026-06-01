@@ -49,6 +49,10 @@ const OptimizationPage = () => {
       errors.push('Categoria é obrigatória');
     }
 
+    if (!formData.maxPricingIndex || parseFloat(formData.maxPricingIndex) <= 0) {
+      errors.push('Índice Pricing máximo é obrigatório e deve ser maior que 0');
+    }
+
     if (!formData.campaignWeeks || parseInt(formData.campaignWeeks) < 1) {
       errors.push('Semanas da campanha deve ser >= 1');
     }
@@ -137,7 +141,7 @@ const OptimizationPage = () => {
               <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {/* Budget Field */}
                 <TextField
-                  label="Orçamento (R$)"
+                  label="Orçamento a ser investido (R$)"
                   name="budget"
                   type="number"
                   value={formData.budget}
@@ -188,15 +192,16 @@ const OptimizationPage = () => {
 
                 {/* Max Pricing Index */}
                 <TextField
-                  label="Máximo Índice de Preço"
+                  label="Índice Pricing Máximo"
                   name="maxPricingIndex"
                   type="number"
                   value={formData.maxPricingIndex}
                   onChange={handleInputChange}
                   fullWidth
                   placeholder="Ex: 1.0"
-                  inputProps={{ step: '0.1', min: '0' }}
+                  inputProps={{ step: '0.1', min: '0.1' }}
                   variant="outlined"
+                  required
                 />
 
                 {/* Campaign Weeks */}
@@ -250,7 +255,7 @@ const OptimizationPage = () => {
                       Processando...
                     </Box>
                   ) : (
-                    '🚀 Otimizar Campanha'
+                    'Otimizar'
                   )}
                 </Button>
               </Box>

@@ -116,8 +116,10 @@ const HistoryPage = () => {
               <TableRow sx={{ backgroundColor: '#0f172a' }}>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>ID</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Categoria</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Objetivo</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Objetivo</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600, color: '#06b6d4' }}>Orçamento</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, color: '#06b6d4' }}>Índice Pricing</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, color: '#06b6d4' }}>Semanas</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600, color: '#06b6d4' }}>ROI Estimado</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Status</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Data</TableCell>
@@ -157,6 +159,16 @@ const HistoryPage = () => {
                   <TableCell align="right">
                     <Typography variant="body2">
                       R$ {item.budget?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || 'N/A'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {item.max_pricing_index ?? 'N/A'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {item.campaign_weeks ?? 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">

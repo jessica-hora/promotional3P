@@ -65,3 +65,9 @@ Este frontend foi construído seguindo as orientações do `SKILL.md` como desig
 
 Esta interface é autônoma e não faz integração com backend ou serviços externos. Todos os dados de histórico e geração de planilha são mantidos localmente no navegador.
 
+## 🌐 Publicação
+
+O deploy automático envia os arquivos de build para a pasta `docs/` e publica-os no branch `gh-pages` como artefato privado do repositório.
+
+A URL pública do GitHub Pages não está ativa neste momento. Para habilitar a publicação pública no futuro, adicione um segredo de repositório `PAGES_TOKEN` com permissão `pages:write`.
+

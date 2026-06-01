@@ -73,8 +73,8 @@ const generateRows = ({ budget, objective }) => {
   });
 };
 
-const buildSummary = ({ category, campaign_weeks, budget, totalInvestment, estimatedRoi, objective }) =>
-  `Sugestão gerada para a categoria ${category} com duração de ${campaign_weeks} semanas. O objetivo selecionado é ${
+const buildSummary = ({ category, campaign_weeks, budget, totalInvestment, estimatedRoi, objective, max_pricing_index }) =>
+  `Sugestão gerada para a categoria ${category} com duração de ${campaign_weeks} semanas e índice pricing máximo de ${max_pricing_index}. O objetivo selecionado é ${
     objective === 'gmv' ? 'Maximizar GMV' : 'Maximizar Take Rate'
   }. O valor total recomendado para investimento é ${formatCurrency(totalInvestment)} e o ROI projetado é de ${(estimatedRoi * 100).toFixed(1)}%.`;
 
@@ -96,7 +96,9 @@ const persistLog = ({ requestPayload, responseResult, status, errorMessage }) =>
     file_name: responseResult?.file_name || null,
     category: requestPayload.category,
     budget: requestPayload.budget,
-      objective: requestPayload.objective,
+    objective: requestPayload.objective,
+    max_pricing_index: requestPayload.max_pricing_index,
+    campaign_weeks: requestPayload.campaign_weeks,
   });
 };
 
@@ -121,6 +123,7 @@ const optimizeCampaign = async ({ budget, category, objective, max_pricing_index
     budget,
     totalInvestment,
     estimatedRoi,
+    max_pricing_index,
   });
   const fileName = `sugestao-campanha-${Date.now()}.csv`;
   const fileContent = buildCsvContent(rows);
