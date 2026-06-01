@@ -1,5 +1,7 @@
+SDD - INTERFACE OTIMIZAÇÃO DE CAMPANHA
+
 RESUMO: 
-Este aplicativo permite que os usuários solicitem uma sugestão de composição de campanha promocional a partir do seu budget de investimento. A solicitação é feita a partir do envio do valor de orçamento a ser investido, a categoria de produtos desejada, o máximo de Indice Pricing e a quantidade de semanas que a campanha deve ficar ativa. A sugestão de campanha é feita por um motor de otimização, em backend, que responde com uma planilha que contém a lista de skus, o preço atual de cada sku, o preço sugerido para a campanha, a previsão de ROI, a previsão de GMV Incremental, e a previsão de gasto de investimento. 
+Este aplicativo permite que os usuários solicitem uma sugestão de composição de campanha promocional a partir do seu budget de investimento. A solicitação é feita a partir do envio do valor de orçamento a ser investido, a categoria de produtos desejada, o máximo de Indice Pricing, o objetivo da otimização (Maximizar GMV ou Maximizar TAKE RATE), tipo de campanha (Campanha à prazo, à vista, frete ou cupom) e a quantidade de semanas que a campanha deve ficar ativa. A sugestão de campanha é feita por um motor de otimização, em backend, que responde com uma planilha que contém a lista de skus (navigation_id e sku_seller),seller_id, o preço atual de cada sku, o preço sugerido para a campanha, a previsão de ROI, a previsão de GMV Incremental, e a previsão de gasto de investimento. 
 
 Histórias de usuário: 
 
