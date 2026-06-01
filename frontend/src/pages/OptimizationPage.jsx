@@ -10,13 +10,14 @@ import {
   CircularProgress,
   Alert,
   Paper,
-} from '@maas-components/core';
-import { apiClient } from '../services/api';
+} from '@mui/material';
+import { optimizeCampaign, downloadCsv } from '../services/api';
 
 const OptimizationPage = () => {
   const [formData, setFormData] = useState({
     budget: '',
     category: 'UD',
+    objective: 'gmv',
     maxPricingIndex: '1.0',
     campaignWeeks: '4',
   });
@@ -71,34 +72,31 @@ const OptimizationPage = () => {
     }
 
     setLoading(true);
-    const startTime = Date.now();
 
-    // Timeout warning after 10 minutes
     const timeoutWarning = setTimeout(() => {
       setTimeWarning(true);
     }, 600000);
 
     try {
-      const response = await apiClient.post('/api/v1/optimize', {
+      const response = await optimizeCampaign({
         budget: parseFloat(formData.budget),
         category: formData.category,
+        objective: formData.objective,
         max_pricing_index: parseFloat(formData.maxPricingIndex),
-        campaign_weeks: parseInt(formData.campaignWeeks),
+        campaign_weeks: parseInt(formData.campaignWeeks, 10),
       });
 
-      setResult(response.data);
+      setResult(response);
       setSuccess(true);
       setFormData({
         budget: '',
         category: 'UD',
+          objective: 'gmv',
         maxPricingIndex: '1.0',
         campaignWeeks: '4',
       });
     } catch (err) {
-      setError(
-        err.response?.data?.detail ||
-          'Erro ao processar otimização. Tente novamente.'
-      );
+      setError(err.message || 'Erro ao processar otimização. Tente novamente.');
       console.error('Optimization error:', err);
     } finally {
       clearTimeout(timeoutWarning);
@@ -107,10 +105,8 @@ const OptimizationPage = () => {
   };
 
   const handleDownloadResult = () => {
-    if (result?.file_url) {
-      const link = document.createElement('a');
-      link.href = result.file_url;
-      link.click();
+    if (result?.file_content && result?.file_name) {
+      downloadCsv(result.file_content, result.file_name);
     }
   };
 
@@ -171,6 +167,23 @@ const OptimizationPage = () => {
                   <option value="EP">EP - Eletrônicos e Periféricos</option>
                   <option value="MODA">Moda</option>
                   <option value="LIVROS">Livros</option>
+                </TextField>
+
+                <TextField
+                  label="Objetivo"
+                  name="objective"
+                  select
+                  value={formData.objective}
+                  onChange={handleInputChange}
+                  SelectProps={{
+                    native: true,
+                  }}
+                  fullWidth
+                  variant="outlined"
+                  required
+                >
+                  <option value="gmv">Maximizar GMV</option>
+                  <option value="take_rate">Maximizar Take Rate</option>
                 </TextField>
 
                 {/* Max Pricing Index */}
@@ -294,6 +307,15 @@ const OptimizationPage = () => {
                     }}
                   >
                     {(result.estimated_roi * 100).toFixed(1)}%
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" sx={{ color: '#94a3b8', mb: 1 }}>
+                    Objetivo selecionado:
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                    {result.objective === 'gmv' ? 'Maximizar GMV' : 'Maximizar Take Rate'}
                   </Typography>
                 </Box>
 

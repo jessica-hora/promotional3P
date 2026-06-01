@@ -15,10 +15,10 @@ import {
   CircularProgress,
   Alert,
   Chip,
-} from '@maas-components/core';
+} from '@mui/material';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { apiClient } from '../services/api';
+import { fetchHistory, downloadCsv } from '../services/api';
 
 const HistoryPage = () => {
   const [history, setHistory] = useState([]);
@@ -26,14 +26,14 @@ const HistoryPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchHistory();
+    loadHistory();
   }, []);
 
-  const fetchHistory = async () => {
+  const loadHistory = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/v1/history?limit=20');
-      setHistory(response.data);
+      const data = await fetchHistory(20);
+      setHistory(data);
       setError(null);
     } catch (err) {
       setError('Erro ao carregar histórico. Tente novamente.');
@@ -69,11 +69,9 @@ const HistoryPage = () => {
     }
   };
 
-  const handleDownload = (fileUrl) => {
-    if (fileUrl) {
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.click();
+  const handleDownload = (item) => {
+    if (item?.file_content && item?.file_name) {
+      downloadCsv(item.file_content, item.file_name);
     }
   };
 
@@ -118,6 +116,7 @@ const HistoryPage = () => {
               <TableRow sx={{ backgroundColor: '#0f172a' }}>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>ID</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Categoria</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Objetivo</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600, color: '#06b6d4' }}>Orçamento</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600, color: '#06b6d4' }}>ROI Estimado</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#06b6d4' }}>Status</TableCell>
@@ -149,6 +148,11 @@ const HistoryPage = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">{item.category || 'N/A'}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {item.objective === 'take_rate' ? 'Maximizar Take Rate' : 'Maximizar GMV'}
+                    </Typography>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="body2">
@@ -183,11 +187,11 @@ const HistoryPage = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {item.status === 'success' && item.file_url && (
+                    {item.status === 'success' && item.file_content && (
                       <Button
                         size="small"
                         variant="outlined"
-                        onClick={() => handleDownload(item.file_url)}
+                        onClick={() => handleDownload(item)}
                         sx={{
                           color: '#8b5cf6',
                           borderColor: '#8b5cf6',
@@ -211,7 +215,7 @@ const HistoryPage = () => {
 
       <Button
         variant="outlined"
-        onClick={fetchHistory}
+        onClick={loadHistory}
         sx={{
           mt: 3,
           borderColor: '#06b6d4',
