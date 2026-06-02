@@ -9,33 +9,93 @@ import HistoryPage from './pages/HistoryPage';
 
 const theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: '#06b6d4',
+      main: '#EC5A10',
+      light: '#F07D38',
+      dark: '#BF4709',
     },
     secondary: {
-      main: '#8b5cf6',
+      main: '#0047BA',
+      light: '#4B7ACF',
+      dark: '#003087',
     },
     background: {
-      default: '#0f172a',
-      paper: '#1e293b',
+      default: '#F8F9FA',
+      paper: '#FFFFFF',
+    },
+    text: {
+      primary: '#2C2C2C',
+      secondary: '#666666',
+    },
+    success: {
+      main: '#2FCC71',
+    },
+    error: {
+      main: '#E74C3C',
+    },
+    warning: {
+      main: '#F39C12',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", sans-serif',
+    h4: {
+      fontWeight: 600,
+      color: '#EC5A10',
+    },
+    h6: {
+      fontWeight: 600,
     },
   },
   components: {
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1e293b',
-          borderBottom: '1px solid #334155',
+          backgroundColor: '#FFFFFF',
+          color: '#2C2C2C',
+          borderBottom: '2px solid #EC5A10',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         },
       },
     },
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#1e293b',
-          borderRight: '1px solid #334155',
-          width: 240,
+          backgroundColor: '#FFFFFF',
+          borderRight: '1px solid #E5E5E5',
+          width: 280,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(236, 90, 16, 0.25)',
+          },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+          },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '&:hover fieldset': {
+              borderColor: '#EC5A10',
+            },
+          },
         },
       },
     },
@@ -55,10 +115,14 @@ function App() {
       <Router>
         <Box sx={{ display: 'flex', height: '100vh' }}>
           {/* AppBar */}
-          <AppBar position="fixed">
-            <Toolbar>
-              <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-                🎯 Otimizador de Campanhas 3P
+          <AppBar position="fixed" sx={{ width: '100%' }}>
+            <Toolbar sx={{ pl: 3, pr: 3 }}>
+              <Box sx={{ fontSize: 24, mr: 2 }}>📊</Box>
+              <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, color: '#EC5A10' }}>
+                Otimizador de Campanhas Promocionais 3P
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#999' }}>
+                v1.0 MVP
               </Typography>
             </Toolbar>
           </AppBar>
@@ -70,7 +134,7 @@ function App() {
             onClose={() => setDrawerOpen(false)}
             variant="permanent"
           >
-            <Box sx={{ pt: 8, width: 240 }}>
+            <Box sx={{ pt: 10, width: 280 }}>
               <List>
                 {menuItems.map((item) => (
                   <ListItem
@@ -81,14 +145,14 @@ function App() {
                     onClick={() => setDrawerOpen(false)}
                     sx={{
                       '&:hover': {
-                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        backgroundColor: 'rgba(236, 90, 16, 0.08)',
                       },
                     }}
                   >
                     <ListItemIcon>
-                      <item.icon sx={{ color: '#06b6d4' }} />
+                      <item.icon sx={{ color: '#EC5A10' }} />
                     </ListItemIcon>
-                    <ListItemText primary={item.label} />
+                    <ListItemText primary={item.label} sx={{ '& .MuiTypography-root': { fontWeight: 500 } }} />
                   </ListItem>
                 ))}
               </List>
@@ -100,10 +164,11 @@ function App() {
             sx={{
               flexGrow: 1,
               mt: 8,
-              ml: { xs: 0, sm: 30 },
+              ml: { xs: 0, md: 35 },
               p: 3,
               overflow: 'auto',
-              backgroundColor: '#0f172a',
+              backgroundColor: '#F8F9FA',
+              minHeight: '100vh',
             }}
           >
             <Switch>
